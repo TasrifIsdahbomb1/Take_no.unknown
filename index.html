@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday to My Other Half</title>
+    
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;600;700&family=Dancing+Script:wght=400;700&display=swap');
+        
+        :root {
+            --color-pink-50: #FDF2F8;
+            --color-pink-600: #DB2777;
+            --color-purple-500: #A855F7;
+            --color-mint-400: #34D399;
+            --color-yellow-400: #FACC15;
+            --color-pink-300: #F9A8D4;
+            --color-purple-200: #EBE0FF;
+            --color-pink-200: #FBCFE8;
+            --color-red-400: #EF4444; 
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-pink-50);
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .title-font {
+            font-family: 'DM Serif Display', serif; 
+        }
+
+        .cursive {
+            font-family: 'Dancing Script', cursive; 
+        }
+
+        /* General Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.8s ease-out forwards; }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); } 
+            100% { transform: translateY(0px); }
+        }
+        .animate-float-slow { animation: float 6s ease-in-out infinite; }
+        
+        /* Pulsate for hearts and sparkles */
+        @keyframes pulsate {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.9; }
+        }
+        .animate-pulsate { animation: pulsate 1.5s ease-in-out infinite; }
+
+
+        /* Cake Candle Animations and Styles */
+        @keyframes flicker {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1) rotate(1deg); opacity: 0.8; }
+        }
+        .animate-flicker { animation: flicker 0.2s infinite alternate; }
+        
+        .bg-stripe-pink {
+            background: repeating-linear-gradient(
+                45deg,
+                var(--color-pink-300),
+                var(--color-pink-300) 4px,
+                var(--color-pink-200) 4px,
+                var(--color-pink-200) 8px
+            );
+        }
+        
+        /* Confetti */
+        @keyframes confetti {
+          0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+          100% { transform: translateY(200vh) rotate(1000deg) scale(0.5); opacity: 0; }
+        }
+        #confetti-effect.active > div {
+            animation: confetti 1s ease-out forwards;
+        }
+        #confetti-effect.active {
+            opacity: 1;
+        }
+
+        /* Background Aura Colors */
+        .orb-pink { background-color: #F9A8D4; }
+        .orb-purple { background-color: #C4B5FD; }
+        .orb-mint { background-color: #6EE7B7; }
+        .orb-yellow { background-color: #FDE047; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-mint-50 font-sans text-gray-800 overflow-hidden relative">
+
+    <!-- 1. Background Aura -->
+    <div id="aura-background" class="fixed inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <!-- 2. Main Application Container -->
+    <div id="app-container" class="transition-opacity duration-500 min-h-screen flex items-center justify-center relative z-10">
+        <!-- Content will be injected here by JavaScript -->
+    </div>
+
+    <!-- 3. JavaScript Logic -->
+    <script>
+        // --- Globals ---
+        let currentPage = 0;
+
+        // --- Utility: SVG Icons (Lucide equivalent) ---
+        const icons = {
+            Users: `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-mint-400 fill-current"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+            ArrowRight: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`,
+            Anchor: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-mint-400"><circle cx="12" cy="5" r="3"/><path d="M12 22V8"/><path d="M5 12H2L7 9H4"/><path d="M19 12h3L17 9h3"/></svg>`,
+            Globe: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-purple-400"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>`,
+            MessageSquare: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-pink-400 fill-current"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+            Home: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-yellow-400 fill-current"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+            Heart: `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#EF4444" stroke="#EF4444" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="text-red-400"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.64 0L12 5.31l-0.78-0.73a5.4 5.4 0 0 0-7.64 0C2.33 6.66 2.33 10 4.42 12.08L12 19.66l7.58-7.58c2.09-2.08 2.09-5.41 0-7.5z"/></svg>`,
+            RefreshCw: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.76 2.76L3 7"/><path d="M3 3v4h4"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.76-2.76L21 17"/><path d="M21 21v-4h-4"/></svg>`
+        };
+
+        // --- Background Renderer ---
+        function renderAuraBackground() {
+            const container = document.getElementById('aura-background');
+            const colors = ['orb-pink', 'orb-purple', 'orb-mint', 'orb-yellow'];
+            container.innerHTML = ''; 
+
+            for (let i = 0; i < 30; i++) {
+                const orb = document.createElement('div');
+                const size = Math.random() * 20 + 10;
+                const duration = Math.random() * 15 + 10;
+                const delay = Math.random() * 8;
+                const colorClass = colors[Math.floor(Math.random() * colors.length)];
+
+                orb.className = `absolute rounded-full filter blur-xl opacity-40 animate-float-slow ${colorClass}`;
+                orb.style.left = `${Math.random() * 100}%`;
+                orb.style.top = `${Math.random() * 100}%`;
+                orb.style.width = `${size}px`;
+                orb.style.height = `${size}px`;
+                orb.style.animationDuration = `${duration}s`;
+                orb.style.animationDelay = `-${delay}s`;
+                container.appendChild(orb);
+            }
+
+            // Small constant sparkles (emojis for simplicity)
+            for (let i = 0; i < 50; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.textContent = '✨';
+                sparkle.className = `absolute text-pink-300 opacity-60 animate-pulsate`;
+                sparkle.style.fontSize = `${Math.random() * 10 + 5}px`;
+                sparkle.style.left = `${Math.random() * 100}%`;
+                sparkle.style.top = `${Math.random() * 100}%`;
+                sparkle.style.animationDelay = `-${Math.random() * 5}s`;
+                sparkle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                container.appendChild(sparkle);
+            }
+        }
+
+        // --- Page 1: Welcome ---
+        function renderWelcomePage() {
+            return `
+                <div class="flex flex-col items-center justify-center min-h-screen p-4 animate-fadeIn relative z-10">
+                    <div class="bg-white/90 backdrop-blur-xl p-8 md:p-12 rounded-[3rem] shadow-2xl border-4 border-pink-300 flex flex-col items-center transform transition-all duration-500 hover:scale-105 hover:shadow-pink-400/50">
+                        
+                        <div class="mb-6 animate-float-slow">${icons.Users}</div>
+
+                        <h1 class="text-5xl sm:text-6xl md:text-7xl text-pink-600 mb-2 drop-shadow-md tracking-wide text-center title-font">
+                            Happy Birthday, My Vibe
+                        </h1>
+                        <p class="text-xl sm:text-2xl text-purple-500 font-light mb-8 cursive px-4 text-center">
+                            To my mirror image, my secret keeper, and the only person who makes a 5-minute distance feel like an ocean we're swimming across together.
+                        </p>
+
+                        <button onclick="nextPage()"
+                            class="group relative bg-gradient-to-r from-pink-400 to-purple-500 px-8 py-3 sm:px-10 sm:py-4 rounded-full shadow-lg hover:shadow-xl hover:from-pink-500 hover:to-purple-600 transition-all duration-300 active:scale-95">
+                            <span class="relative flex items-center gap-3 text-white font-bold text-lg sm:text-xl">
+                                Enter Our World <span class="ml-2 group-hover:translate-x-2 transition-transform">${icons.ArrowRight}</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- Page 2: Messages ---
+        const messages = [
+            { 
+                title: "More Than a Cousin", 
+                icon: icons.Heart,
+                text: "We might be cousins on paper, but come on. You annoy me like a sister, you protect me like a sister, and you're the family I actually chose. That's real.",
+                bg: "bg-green-50/90", 
+                border: "border-green-300" 
+            },
+            { 
+                title: "Same Person, Different Font", 
+                icon: icons.Users,
+                text: "It's genuinely weird how similar we are. Same brain cells, same chaos, same vibes—just different genders. We're 100% pure vibe, all sisterly love, and honestly, that's my favorite kind of bond.",
+                bg: "bg-yellow-50/90", 
+                border: "border-yellow-300"
+            },
+            {
+                title: "The Silent Rebellion",
+                icon: icons.MessageSquare,
+                text: "Our parents hate each other, and they definitely hate us talking. But us being friends? That's our little rebellion. We're breaking the cycle just by being normal to each other.",
+                bg: "bg-purple-50/90",
+                border: "border-purple-300"
+            },
+            {
+                title: "The 5-Minute Tragedy",
+                icon: icons.Home,
+                text: "It is absolutely ridiculous that we live a five-minute drive apart and I can't just come over. It’s the stupidest tragedy ever, but hey, it’s *our* tragedy.",
+                bg: "bg-pink-50/90",
+                border: "border-pink-300"
+            },
+            { 
+                title: "7 Years of Not Forgetting", 
+                icon: icons.Globe,
+                text: "We haven't stood in the same room for seven years. Seven! And yet, nothing faded. We didn't forget each other. We just got really good at being close from a distance.",
+                bg: "bg-yellow-100/90", 
+                border: "border-yellow-400"
+            },
+            {
+                title: "My Reset Button",
+                icon: icons.Anchor,
+                text: "You're the person I go to when I'm overwhelmed. When I talk to you, I actually relax. You're my safe space in this crazy family.",
+                bg: "bg-red-50/90", 
+                border: "border-red-300"
+            },
+            {
+                title: "The Annoyance Factor",
+                icon: icons.MessageSquare,
+                text: "I trust you the most, but oh my god, you also annoy me the most. That’s how I know it's real family love. I wouldn't trade your teasing for anything.",
+                bg: "bg-purple-100/90",
+                border: "border-purple-400"
+            },
+            {
+                title: "Whatever It Takes",
+                icon: icons.Heart,
+                text: "Rules, bans, distance—none of it actually matters. If you need me, I'm there. No questions asked. We always figure it out.",
+                bg: "bg-pink-100/90",
+                border: "border-pink-400"
+            },
+            { 
+                title: "Happy Birthday, Bestie", 
+                icon: icons.RefreshCw, 
+                text: "To my mirror, my vault, and my favorite headache. I miss you, I love you, and I’m counting down the days until we break that 5-minute barrier.",
+                bg: "bg-white/90", 
+                border: "border-gray-200"
+            }
+        ];
+        let messageStep = 0;
+
+        function renderMessagesPage() {
+            const currentMessage = messages[messageStep];
+            
+            return `
+                <div class="flex flex-col items-center justify-center min-h-screen p-4 animate-fadeIn z-10 relative w-full">
+                    <h2 class="text-3xl text-pink-600 mb-12 font-bold title-font text-center bg-white/50 p-4 rounded-2xl backdrop-blur-sm shadow-md max-w-lg w-full">
+                        Nine truths about us...
+                    </h2>
+                    
+                    <div class="relative w-full max-w-sm h-[400px] flex items-center justify-center">
+                        <!-- Message Card -->
+                        <div class="absolute w-full p-8 rounded-3xl shadow-2xl transition-all duration-300 ease-in-out border-4 ${currentMessage.bg} ${currentMessage.border} transform hover:scale-[1.02]">
+                            <div class="h-full flex flex-col justify-center items-center text-center">
+                                <div class="mb-4 p-3 rounded-full bg-white shadow-inner">${currentMessage.icon}</div>
+                                <h3 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 title-font">${currentMessage.title}</h3>
+                                <p class="text-lg sm:text-xl text-gray-700 leading-relaxed italic">
+                                    "${currentMessage.text}"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- HIGH VISIBILITY BUTTON -->
+                    <button onclick="nextMessageStep()" 
+                        class="mt-12 group relative 
+                               bg-gradient-to-r from-pink-500 to-purple-600 
+                               px-8 py-4 sm:px-10 rounded-full 
+                               text-white font-bold text-lg sm:text-xl
+                               shadow-2xl shadow-pink-500/50 
+                               hover:shadow-pink-400 
+                               transition active:scale-95 transform hover:scale-[1.05] 
+                               ring-4 ring-white/50"
+                    >
+                        ${messageStep < messages.length - 1 ? `Next Truth (${messageStep + 2}/${messages.length})` : "Final Wish (Cake Time)"}
+                        <span class="ml-2 inline group-hover:translate-x-1 transition-transform">${icons.ArrowRight}</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function nextMessageStep() {
+            if (messageStep < messages.length - 1) {
+                messageStep++;
+                renderApp();
+            } else {
+                messageStep = 0; 
+                nextPage();
+            }
+        }
+
+        // --- Page 3: Cake ---
+        let candles = [true, true, true, true]; // Four candles
+
+        function renderCakePage() {
+            const allBlown = candles.every(c => c === false);
+            
+            const candleElements = candles.map((isBurning, i) => {
+                const flameClass = isBurning ? 'animate-flicker opacity-100 scale-100' : 'opacity-0 scale-0';
+                const smoke = !isBurning ? `<div class="absolute -top-16 text-2xl animate-float-slow" style="animation: float 2s forwards; opacity:0; --animate-delay:${i * 0.1}s;">☁️</div>` : '';
+
+                return `
+                    <div class="relative flex flex-col items-center cursor-pointer group" onclick="blowCandle(${i})">
+                        ${smoke}
+                        <!-- Flame -->
+                        <div class="w-4 h-8 bg-gradient-to-t from-orange-400 to-yellow-300 rounded-full absolute -top-10 shadow-[0_0_15px_rgba(255,165,0,0.5)] transition-all duration-300 origin-bottom ${flameClass}"></div>
+                        
+                        <!-- Candle Stick (Pink stripes) -->
+                        <div class="w-3 h-10 bg-stripe-pink rounded-md border border-pink-300 shadow-sm"></div>
+                    </div>
+                `;
+            }).join('');
+
+            // Confetti
+            const confettiPieces = Array.from({ length: 60 }, (_, i) => {
+                const colors = ['⭐', '💜', '💎', '💛'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                return `
+                    <div class="absolute text-xl" style="
+                        left: ${Math.random()*100}%; 
+                        top: ${Math.random() * 50 + 20}%; 
+                        animation-delay: -${Math.random() * 3}s;
+                        animation-duration: ${Math.random() * 2 + 1}s;
+                    ">${color}</div>
+                `;
+            }).join('');
+
+            return `
+                <div class="flex flex-col items-center justify-center min-h-screen p-4 animate-fadeIn z-10 relative w-full">
+                    <h2 class="text-3xl md:text-4xl text-pink-600 mb-12 font-bold title-font text-center bg-white/50 p-4 rounded-2xl backdrop-blur-sm shadow-md max-w-lg w-full">
+                        ${allBlown ? "Wish Granted! (Wishing we can hang out soon!)" : "Make a Wish, Sister! (Tap the flames)"}
+                    </h2>
+
+                    <!-- Confetti Explosion Area (Initially hidden) -->
+                    <div id="confetti-effect" class="absolute inset-0 pointer-events-none transition-opacity duration-100 ${allBlown ? 'opacity-100 active' : 'opacity-0'}">
+                        ${confettiPieces}
+                    </div>
+                    
+                    <div class="relative mt-10 transform scale-100 sm:scale-125 transition-transform duration-500">
+                        <!-- Cake Base Layers -->
+                        <div class="flex flex-col items-center relative">
+                            
+                            <!-- Candles Container -->
+                            <div class="flex gap-4 mb-[-5px] z-10">
+                                ${candleElements}
+                            </div>
+
+                            <!-- Top Layer (Purple) -->
+                            <div class="w-48 h-20 bg-purple-200 rounded-t-3xl border-4 border-purple-300 relative overflow-hidden shadow-inner flex flex-col items-center justify-center">
+                               <div class="absolute top-0 w-full h-4 bg-white/40 skew-y-0 rounded-[50%] transform scale-x-110"></div>
+                               <!-- Star Sprinkles -->
+                               <div class="absolute inset-0 p-2 opacity-50">
+                                 <div class="absolute top-2 left-4 text-xs text-yellow-400">★</div>
+                                 <div class="absolute bottom-4 right-6 text-sm text-pink-400">✧</div>
+                                 <div class="absolute top-6 right-2 text-xs text-mint-400">★</div>
+                               </div>
+                            </div>
+
+                            <!-- Frosting Dripping (Purple) -->
+                            <div class="w-52 h-6 flex justify-center -mt-2 z-10">
+                              ${[...Array(7)].map(() => `<div class="w-6 h-6 bg-purple-200 rounded-full -ml-1 border-b-4 border-purple-300"></div>`).join('')}
+                            </div>
+
+                            <!-- Bottom Layer (Pink) -->
+                            <div class="w-64 h-28 bg-pink-200 rounded-b-2xl border-4 border-pink-300 -mt-4 shadow-lg relative flex items-center justify-center">
+                              <p class="text-white text-lg font-bold tracking-widest select-none opacity-40 title-font">SISTER</p>
+                            </div>
+
+                            <!-- Plate -->
+                            <div class="w-80 h-4 bg-gray-200 rounded-full mt-1 shadow-xl"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function blowCandle(index) {
+            if (candles[index]) {
+                candles[index] = false;
+                renderApp(); // Rerender to show the change
+
+                if (candles.every(c => c === false)) {
+                    // All candles are out, wait for confetti to finish
+                    setTimeout(nextPage, 3500);
+                }
+            }
+        }
+
+
+        // --- Page 4: Finale ---
+        function renderFinalePage() {
+            return `
+                <div class="flex flex-col items-center justify-center min-h-screen p-4 animate-fadeIn text-center z-10 relative overflow-hidden">
+                    <div class="bg-white/90 backdrop-blur-lg p-8 md:p-12 rounded-[3rem] shadow-2xl border-8 border-double border-pink-300 max-w-2xl w-full transform hover:scale-105 transition duration-500">
+                        <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-400 mb-6 title-font">
+                            My Forever Person
+                        </h1>
+                        
+                        <div class="flex justify-center gap-4 mb-8">
+                           <div class="w-10 h-10 text-red-400 animate-pulsate">${icons.Heart}</div>
+                           <div class="w-10 h-10 text-mint-400 animate-float-slow">${icons.Users}</div>
+                           <div class="w-10 h-10 text-red-400 animate-pulsate">${icons.Heart}</div>
+                        </div>
+
+                        <p class="text-xl md:text-2xl text-gray-700 mb-10 cursive leading-relaxed">
+                            "They can keep us apart by five minutes and a mountain of family drama, but they can't stop this bond. You're my sister, my vibe, and my home."
+                        </p>
+                        
+                        <p class="text-lg font-semibold text-purple-500">
+                           100% Vibe. 1000% Pure Love. Happy Birthday!
+                        </p>
+
+                        <button onclick="window.location.reload()"
+                             class="mt-8 flex items-center gap-2 mx-auto px-6 py-3 bg-gray-100 text-gray-600 rounded-full font-bold shadow-md hover:bg-gray-200 transition transform active:scale-95"
+                        >
+                            ${icons.RefreshCw} Replay the Love
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        // --- App State Controller ---
+        function renderApp() {
+            const container = document.getElementById('app-container');
+            let content = '';
+
+            switch (currentPage) {
+                case 0:
+                    content = renderWelcomePage();
+                    break;
+                case 1:
+                    content = renderMessagesPage();
+                    break;
+                case 2:
+                    content = renderCakePage();
+                    break;
+                case 3:
+                    content = renderFinalePage();
+                    break;
+            }
+
+            container.innerHTML = content;
+        }
+
+        function nextPage() {
+            if (currentPage < 3) {
+                currentPage++;
+                renderApp();
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAuraBackground();
+            renderApp();
+        });
+    </script>
+</body>
+</html>
